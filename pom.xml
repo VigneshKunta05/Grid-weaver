@@ -7,6 +7,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Spring Boot Parent -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -14,20 +15,22 @@
         <relativePath/>
     </parent>
 
+    <!-- Project Information -->
     <groupId>com.gridweaver</groupId>
     <artifactId>grid-weaver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-
     <name>Grid-weaver</name>
-    <description>Grid Weaver Project</description>
+    <description>Real-time Smart Grid Monitoring System</description>
 
+    <!-- Java Version -->
     <properties>
         <java.version>24</java.version>
     </properties>
 
+    <!-- Dependencies -->
     <dependencies>
 
-        <!-- Spring Web -->
+        <!-- Spring Boot Web / REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -39,7 +42,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- WebSocket -->
+        <!-- WebSocket / STOMP -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -60,15 +63,60 @@
         </dependency>
 
     </dependencies>
+
+    <!-- Build Configuration -->
     <build>
         <plugins>
+
+            <!--
+                IMPORTANT:
+                Our Java files are currently in root-level folders:
+                config/
+                engine/
+                model/
+                repository/
+                service/
+                simulator/
+
+                So we explicitly tell Maven to treat the project root
+                as a Java source directory.
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+
+                <executions>
+                    <execution>
+                        <id>add-project-root-as-source</id>
+                        <phase>generate-sources</phase>
+
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
-                    <mainClass>com.gridweaver.gridweaver.GridWeaverApplication</mainClass>
+                    <mainClass>
+                        com.gridweaver.gridweaver.GridWeaverApplication
+                    </mainClass>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
 </project>
