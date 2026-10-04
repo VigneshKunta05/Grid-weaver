@@ -1,16 +1,40 @@
-# React + Vite
+# ⚡ Grid-Weaver
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Real-Time Smart Grid Monitoring Dashboard powered by Spring Boot, React, WebSocket and live NPP / MERIT India grid data.
 
-Currently, two official plugins are available:
+Grid-Weaver is a real-time smart grid monitoring system that collects and displays India's national power-grid data through a Spring Boot backend and a React-based dashboard.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The dashboard provides live visibility into electricity demand, generation, grid import/export and generation sources such as thermal, hydro, wind, gas, nuclear and solar.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Live Demo
 
-## Expanding the Oxlint configuration
+### Dashboard
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+https://grid-weaver-frontend.onrender.com
+
+The application is deployed using Render.
+
+---
+
+## 📌 Project Overview
+
+Grid-Weaver connects a Spring Boot backend with a React frontend to provide a real-time view of the Indian power grid.
+
+The backend retrieves grid information from the NPP / MERIT India data source and exposes the information through REST APIs.
+
+Real-time updates are delivered to the frontend using WebSocket communication.
+
+### Main flow
+
+```text
+NPP / MERIT India
+       ↓
+Spring Boot Backend
+       ↓
+REST APIs + WebSocket
+       ↓
+React Dashboard
+       ↓
+Real-Time Grid Monitoring
