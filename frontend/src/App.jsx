@@ -15,6 +15,12 @@ import {
 } from 'recharts'
 import './App.css'
 
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+
+const WS_URL =
+    import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
+
 function App() {
   const [gridData, setGridData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -28,7 +34,7 @@ function App() {
     // INITIAL DATA - REST API
     // =========================
 
-    fetch('/api/real-data/current')
+    fetch(`${API_BASE_URL}/api/real-data/current`)
         .then((response) => {
 
           if (!response.ok) {
@@ -75,7 +81,7 @@ function App() {
     const client = new Client({
 
       webSocketFactory: () =>
-          new WebSocket('ws://localhost:8080/ws'),
+          new WebSocket(WS_URL),
 
       reconnectDelay: 5000,
 
