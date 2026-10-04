@@ -4,6 +4,9 @@ import com.gridweaver.gridweaver.engine.StateEngine;
 import com.gridweaver.gridweaver.model.Device;
 import com.gridweaver.gridweaver.model.DeviceType;
 import com.gridweaver.gridweaver.model.GridState;
+import com.gridweaver.gridweaver.service.GridWebSocketService;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,29 +15,51 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SocketServer {
+@Component
+public class SocketServer implements CommandLineRunner {
 
     private static final int PORT = 9090;
 
-    private static final AtomicInteger connectedDevices =
+    private final AtomicInteger connectedDevices =
             new AtomicInteger(0);
 
-    private static final StateEngine stateEngine =
-            new StateEngine();
+    private final StateEngine stateEngine;
+    private final GridWebSocketService gridWebSocketService;
 
-    public static void main(String[] args) {
+    public SocketServer(
+            StateEngine stateEngine,
+            GridWebSocketService gridWebSocketService) {
 
-        System.out.println("GridWeaver Socket Server starting...");
+        this.stateEngine = stateEngine;
+        this.gridWebSocketService = gridWebSocketService;
+    }
 
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+    @Override
+    public void run(String... args) {
+
+        Thread.startVirtualThread(
+                this::startServer
+        );
+    }
+
+    private void startServer() {
+
+        System.out.println(
+                "GridWeaver Socket Server starting..."
+        );
+
+        try (ServerSocket serverSocket =
+                     new ServerSocket(PORT)) {
 
             System.out.println(
-                    "Socket server listening on port " + PORT
+                    "Socket server listening on port "
+                            + PORT
             );
 
             while (true) {
 
-                Socket clientSocket = serverSocket.accept();
+                Socket clientSocket =
+                        serverSocket.accept();
 
                 Thread.startVirtualThread(
                         () -> handleDevice(clientSocket)
@@ -44,26 +69,33 @@ public class SocketServer {
         } catch (IOException e) {
 
             System.err.println(
-                    "Socket server error: " + e.getMessage()
+                    "Socket server error: "
+                            + e.getMessage()
             );
         }
     }
 
-    private static void handleDevice(Socket socket) {
+    private void handleDevice(Socket socket) {
 
-        int count = connectedDevices.incrementAndGet();
+        int count =
+                connectedDevices.incrementAndGet();
 
         if (count <= 10 || count % 100 == 0) {
+
             System.out.println(
-                    "Connected devices: " + count
+                    "Connected devices: "
+                            + count
             );
         }
 
         try (
                 socket;
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                )
+                BufferedReader reader =
+                        new BufferedReader(
+                                new InputStreamReader(
+                                        socket.getInputStream()
+                                )
+                        )
         ) {
 
             String event;
@@ -90,6 +122,7 @@ public class SocketServer {
                     connectedDevices.decrementAndGet();
 
             if (remaining % 100 == 0) {
+
                 System.out.println(
                         "Connected devices remaining: "
                                 + remaining
@@ -98,28 +131,34 @@ public class SocketServer {
         }
     }
 
-    private static void processEvent(String event) {
+    private void processEvent(String event) {
 
         try {
 
-            String[] parts = event.split(",");
+            String[] parts =
+                    event.split(",");
 
             if (parts.length != 3) {
+
                 System.err.println(
-                        "Invalid event: " + event
+                        "Invalid event: "
+                                + event
                 );
+
                 return;
             }
 
             String deviceId = parts[0];
             String eventType = parts[1];
-            double value = Double.parseDouble(parts[2]);
+            double value =
+                    Double.parseDouble(parts[2]);
 
             Device device;
 
             if (eventType.equals("GENERATION")) {
 
                 device = new Device();
+
                 device.setId(deviceId);
                 device.setType(DeviceType.SOLAR);
                 device.setPower(value);
@@ -127,6 +166,7 @@ public class SocketServer {
             } else if (eventType.equals("LOAD")) {
 
                 device = new Device();
+
                 device.setId(deviceId);
                 device.setType(DeviceType.LOAD);
                 device.setPower(value);
@@ -134,6 +174,7 @@ public class SocketServer {
             } else if (eventType.equals("BATTERY")) {
 
                 device = new Device();
+
                 device.setId(deviceId);
                 device.setType(DeviceType.BATTERY);
                 device.setBatteryPercentage(value);
@@ -141,16 +182,21 @@ public class SocketServer {
             } else {
 
                 System.err.println(
-                        "Unknown event type: " + eventType
+                        "Unknown event type: "
+                                + eventType
                 );
+
                 return;
             }
 
+            // Update device in StateEngine
             stateEngine.updateDevice(device);
 
+            // Calculate complete grid state
             GridState gridState =
                     stateEngine.calculateGridState();
 
+            // Print grid state
             System.out.println(
                     "Grid State -> Generation: "
                             + gridState.getTotalGeneration()
@@ -162,6 +208,11 @@ public class SocketServer {
                             + gridState.getGridImport()
                             + ", Export: "
                             + gridState.getGridExport()
+            );
+
+            // Send grid state to WebSocket clients
+            gridWebSocketService.broadcastGridState(
+                    gridState
             );
 
         } catch (Exception e) {

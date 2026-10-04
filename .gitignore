@@ -9,6 +9,10 @@ target/
 # Maven
 .mvn/
 
+# Node / React
+frontend/node_modules/
+frontend/dist/
+
 # OS files
 .DS_Store
 Thumbs.db
