@@ -1,40 +1,84 @@
 # ⚡ Grid-Weaver
 
-> Real-Time Smart Grid Monitoring Dashboard powered by Spring Boot, React, WebSocket and live NPP / MERIT India grid data.
+### Real-Time Smart Grid Monitoring & Energy Management System
 
-Grid-Weaver is a real-time smart grid monitoring system that collects and displays India's national power-grid data through a Spring Boot backend and a React-based dashboard.
+Grid-Weaver is a full-stack smart grid monitoring application built with **Spring Boot, React, WebSocket, REST APIs, and real-time Indian power-grid data**.
 
-The dashboard provides live visibility into electricity demand, generation, grid import/export and generation sources such as thermal, hydro, wind, gas, nuclear and solar.
+The system collects live grid information from the **National Power Portal (NPP)**, processes generation and demand data, and presents it through an interactive real-time dashboard.
 
 ---
 
-## 🚀 Live Demo
+## 🌐 Live Demo
 
-### Dashboard
-
+### Frontend
 https://grid-weaver-frontend.onrender.com
 
-The application is deployed using Render.
+### Backend API
+https://grid-weaver.onrender.com
+
+### Current Grid Data
+https://grid-weaver.onrender.com/api/real-data/current
 
 ---
 
-## 📌 Project Overview
+# 📌 Project Overview
 
-Grid-Weaver connects a Spring Boot backend with a React frontend to provide a real-time view of the Indian power grid.
+Grid-Weaver provides a real-time view of India's electricity grid by monitoring:
 
-The backend retrieves grid information from the NPP / MERIT India data source and exposes the information through REST APIs.
+- ⚡ Total electricity demand
+- 🔋 Total generation
+- 📥 Grid import
+- 📤 Grid export
+- ☀️ Solar generation
+- 💨 Wind generation
+- 💧 Hydro generation
+- 🔥 Thermal generation
+- ⚛️ Nuclear generation
+- 🔥 Gas generation
 
-Real-time updates are delivered to the frontend using WebSocket communication.
+The backend fetches real grid data from the **National Power Portal (NPP)** and exposes it through REST APIs.
 
-### Main flow
+The dashboard receives real-time updates using **WebSocket/STOMP**.
+
+---
+
+# ✨ Features
+
+## ⚡ Real-Time Grid Monitoring
+
+The dashboard displays live:
+
+- Current Demand
+- Total Generation
+- Grid Import
+- Grid Export
+
+Data is retrieved from the National Power Portal.
+
+---
+
+## 📊 Generation Mix
+
+Grid-Weaver breaks down electricity generation into major sources:
+
+| Source | Description |
+|---|---|
+| Thermal | Thermal power generation |
+| Hydro | Hydroelectric generation |
+| Solar | Solar generation |
+| Wind | Wind generation |
+| Gas | Gas-based generation |
+| Nuclear | Nuclear generation |
+
+The dashboard visualizes the generation mix using interactive charts.
+
+---
+
+## 🔄 WebSocket Real-Time Updates
+
+Grid-Weaver uses WebSocket communication for live dashboard updates.
+
+### WebSocket Endpoint
 
 ```text
-NPP / MERIT India
-       ↓
-Spring Boot Backend
-       ↓
-REST APIs + WebSocket
-       ↓
-React Dashboard
-       ↓
-Real-Time Grid Monitoring
+/ws
